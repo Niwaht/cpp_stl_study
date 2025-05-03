@@ -39,6 +39,13 @@ void getMinAndMax(int numbers[], int size, int* min, int* max) {
     }
 }
 
+void myFunction() {
+    int* ptr = new int[5];
+    ptr[2] = 10;
+    cout << "Hi, I am equal to " << ptr[2];
+    delete[] ptr;
+}
+
 int main()
 {
     int n = 5;
@@ -85,7 +92,7 @@ int main()
     cout << "Minimum number in numbers[] is " << min << '\n';
     cout << "Maximum number in numbers[] is " << max << '\n';
 
-    int size;
+    /* int size;
     cout << "Size: ";
     cin >> size;
     // int myArray[size];
@@ -99,7 +106,30 @@ int main()
         cout << *(myArray + i) << ' ';
     }
     delete[] myArray;
-    myArray = NULL;
+    myArray = NULL; */
+
+    /* int rows, cols;
+    cout << "rows, cols: ";
+    cin >> rows >> cols;
+    int** table = new int*[rows];
+    for(int i=0; i<rows; i++) {
+        table[i] = new int[cols];
+    }
+    table[1][2] = 88;
+    for(int i=0; i<rows; i++) {
+        delete[] table[i];
+    }
+    delete[] table;
+    table = NULL; */
+
+    int savedMoney[5] = {100, 200, 300, 400, 500};
+    int total = 0;
+    for(int i=0; i<5; i++) {
+        total += savedMoney[i];
+    }
+    cout << "Total: " << total << '\n';
+
+    myFunction();
 
     cout << '\n';
     return 0;
