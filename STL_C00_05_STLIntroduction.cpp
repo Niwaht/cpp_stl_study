@@ -4,6 +4,8 @@
 #include <deque>
 #include <stack>
 #include <queue>
+#include <set>
+#include <unordered_set>
 // #include <bits/stdc++.h>
 using namespace std;
 
@@ -154,15 +156,67 @@ void explainPriorityQueue() {
     cout << pq1.top() << '\n';      // 2
 }
 
+void explainSet() {
+    set<int> s;
+    s.insert(1);        // 1
+    s.emplace(2);       // 1, 2
+    s.insert(2);        // 1, 2
+    s.insert(4);        // 1, 2, 4
+    s.insert(3);        // 1, 2, 3, 4
+
+    // Set does not allow duplicates, and has auto-sorting
+
+    cout << "Set:\n";
+    auto it1 = s.find(3);    // Address of 3 in set s
+    cout << *it1 << '\n';
+    auto it2 = s.find(6);    // No 6, returns end(s)
+    cout << *it2 << '\n';
+
+    s.erase(4); // (O log n) complexity
+    int cnt = s.count(1);
+    cout << cnt << '\n';
+
+    auto it3 = s.find(3);
+    cout << *it3 << '\n';
+    s.erase(it3); // (O 1) complexity
+
+    auto it4 = s.find(2);
+    auto it5 = s.find(4);
+    s.erase(it4, it5);
+
+    // Bounds work the same way as in std::vector
+    auto it6 = s.lower_bound(2);
+    auto it7 = s.upper_bound(3);
+}
+
+void explainMultiset() {
+    multiset<int> ms;
+    ms.insert(1);   // 1
+    ms.insert(1);   // 1, 1
+    ms.insert(1);   // 1, 1, 1
+    ms.erase(1);    //
+
+    int cnt = ms.count(1);  // 0
+    cout << "Multiset:\n";
+    cout << cnt << '\n';
+
+    // ms.erase(ms.find(1));
+    // ms.erase(ms.find(1), ms.find(1) + 2);
+}
+
 int main()
 {
-    explainPair();
-    explainVector();
-    explainList();
-    explainDeque();
-    explainStack();
-    explainQueue();
+    // explainPair();
+    // explainVector();
+    // explainList();
+    // explainDeque();
+    // explainStack();
+    // explainQueue();
     explainPriorityQueue();
+    explainSet();
+    explainMultiset();
+    /// explainUnorderedSet();
+    unordered_set<int> us;
 
     return 0;
 }
