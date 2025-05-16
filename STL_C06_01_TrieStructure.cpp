@@ -29,7 +29,7 @@ public:
 
     void print(vector<T> &v) const {
         if(tries.empty()) {
-            copy(begin(v), end(v), ostream_iterator<T>{cout, ", "});
+            copy(begin(v), end(v), ostream_iterator<T>{cout, " "});
             cout << '\n';
         }
         for(const auto &p : tries) {
@@ -38,11 +38,42 @@ public:
             v.pop_back();
         }
     }
+
+    void print() const {
+        vector<T> v;
+        print(v);
+    }
+
+    template <typename It>
+    optional<reference_wrapper<const trie>>
+    subtrie(It it, It end_it) const {
+        if(it == end_it) { return ref(*this); }
+        auto found (tries.find(*it));
+        if(found == end(tries)) { return {}; }
+        return found->second.subtrie(next(it), end_it);
+    }
+
+    template <typename C>
+    auto subtrie(const C &c) {
+        return subtrie(begin(c), end(c));
+    }
 };
 
 int main()
 {
+    trie<string> t;
+    t.insert({"hi", "how", "are", "you"});
+    t.insert({"hi", "i", "am", "great", "thanks"});
+    t.insert({"what", "are", "you", "doing"});
+    t.insert({"i", "am", "watching", "a", "movie"});
 
+    cout << "recorded sentences:\n";
+    t.print();
+
+    cout << "\npossible suggesestions after \"hi\":\n";
+    if(auto st (t.subtrie(initializer_list<string>{"hi"})); st) {
+        st->get().print();
+    }
 
     return 0;
 }
