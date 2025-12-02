@@ -103,7 +103,7 @@ void main_8() {
 void main_9() {
     cout << "\nIteration over a string\n----------------------------------------\n";
     string s = "abcdef";
-    for(int i = 0; i < s.length(); i++) cout << s[i] << ' ';
+    for(int i = 0; i < (int)s.length(); i++) cout << s[i] << ' ';
     cout << '\n';
     for(char& c : s) c -= 32;
     cout << s << '\n';
@@ -211,9 +211,179 @@ void main_18() {
     cout << '\n';
 }
 
+/// Stacks
+#include <stack>
+void main_19() {
+    cout << "\nStacks\n----------------------------------------\n";
+    stack<int> st;
+    st.emplace(1);
+    st.emplace(2);
+    cout << st.top() << ' ';
+    st.pop();
+    cout << st.top() << '\n';
+}
+
+/// Queues
+#include <queue>
+void main_20() {
+    cout << "\nQueues\n----------------------------------------\n";
+    queue<int> q;
+    q.emplace(1);
+    q.emplace(2);
+    cout << q.front() << ' ';
+    q.pop();
+    cout << q.front() << '\n';
+}
+
+/// Lists
+#include <list>
+void main_21() {
+    cout << "\nLists\n----------------------------------------\n";
+    list l{10, 20};
+    l.emplace_back(30);
+    l.emplace_front(0);
+    cout << l.front() << ' ' << l.back() << '\n';
+    auto it = l.begin();
+    it++;
+    it = l.erase(it);
+    for(auto x : l) cout << x << ' ';
+    cout << '\n';
+    it++;
+    it = l.emplace(it, 25);
+    for(auto x : l) cout << x << ' ';
+    cout << '\n';
+    l.emplace(l.end(), 40);
+    for(auto x : l) cout << x << ' ';
+    cout << '\n'
+         << *it << '\n';
+}
+
+/// Priority queues
+void main_22() {
+    cout << "\nPriority queues\n----------------------------------------\n";
+    priority_queue<int> q;
+    q.emplace(1);
+    q.emplace(2);
+    q.emplace(3);
+    cout << q.top() << ' ';
+    q.pop();
+    cout << q.top() << '\n';
+}
+
+/// Min heaps via self-defined struct
+void main_23() {
+    cout << "\nMin heaps via self-defined struct\n----------------------------------------\n";
+    struct cmp {
+        bool operator()(int a, int b){ return a > b; }
+    };
+
+    priority_queue<int, vector<int>, cmp> q;
+    q.emplace(1);
+    q.emplace(2);
+    q.emplace(3);
+    cout << q.top() << ' ';
+    q.pop();
+    cout << q.top() << '\n';
+}
+
+/// Min heaps via self-defined lambda expression
+void main_24() {
+    cout << "\nMin heaps via self-defined lambda expr.\n----------------------------------------\n";
+    auto cmp = [](int a, int b){ return a > b; };
+    priority_queue<int, vector<int>, decltype(cmp)> q(cmp);
+    q.emplace(1);
+    q.emplace(2);
+    q.emplace(3);
+    cout << q.top() << ' ';
+    q.pop();
+    cout << q.top() << '\n';
+}
+
+/// Sets
+#include <set>
+void main_25() {
+    cout << "\nSets\n----------------------------------------\n";
+    set s{1, 2, 2, 3, 4};
+    s.emplace(5);
+    cout << s.size() << ' ';
+    s.erase(2);
+    auto it = s.lower_bound(2);
+    if(it != s.end()) cout << *it << ' ';
+    else cout << "None\n";
+    it = s.emplace(5).first;
+    cout << *it << ' ';
+    s.erase(it);
+    it = s.find(3);
+    if(it != s.end()) cout << *it << '\n';
+    else cout << "None\n";
+    for(auto x : s) cout << x << ' ';
+    cout << '\n';
+}
+
+/// Multisets
+void main_26() {
+    cout << "\nMultisets\n----------------------------------------\n";
+    multiset s{1, 2, 2, 3, 4};
+    s.emplace(5);
+    cout << s.size() << ' ';
+    s.erase(2);
+    auto it = s.lower_bound(2);
+    if(it != s.end()) cout << *it << ' ';
+    else cout << "None\n";
+    it = s.emplace(5);
+    cout << *it << ' ';
+    s.erase(it);
+    it = s.find(3);
+    if(it != s.end()) cout << *it << '\n';
+    else cout << "None\n";
+    for(auto x : s) cout << x << ' ';
+    cout << '\n';
+}
+
+/// Maps
+#include <map>
+void main_27() {
+    cout << "\nMaps\n----------------------------------------\n";
+    map<int, int> mp;
+    auto it = mp.emplace(1, 2).first;
+    cout << it->first << ' ' << it->second << ", ";
+    mp[2] = 0;
+    mp[2]++;
+    it = mp.find(2);
+    if(it != mp.end()) cout << it->first << ' ' << it->second << '\n';
+    else cout << "None\n";
+    for(auto [key, val] : mp) cout << key << ' ' << val << '\n';
+}
+
+/// Hash function via self-defined class
+void main_28() {
+    cout << "\nHash function via self-defined class\n----------------------------------------\n";
+    struct Hash {
+        int operator()(pair<int, int> x) const { return x.first + x.second; }
+    };
+    unordered_map<pair<int, int>, int, Hash> mp;
+    cout << "Hash function created\n";
+}
+
+/// Bitsets
+#include <bitset>
+#define csn cout << s << '\n'
+void main_29() {
+    cout << "\nBitsets\n----------------------------------------\n";
+    bitset<10> s(100);
+    cout << s << ' ';
+    cout << s.count() << '\n';
+    s.set(0); csn;
+    s.reset(3); csn;
+    s.flip(1); csn;
+    s[5] = 0; csn;
+    s.reset(); csn;
+}
+
 int main()
 {
     main_1(); main_2(); main_3(); main_4(); main_5(); main_6(); main_7(); main_8(); main_9(); main_10();
-    main_11(); main_12(); main_13(); main_14(); main_15(); main_16(); main_17(); main_18();
+    main_11(); main_12(); main_13(); main_14(); main_15(); main_16(); main_17(); main_18(); main_19(); main_20();
+    main_21(); main_22(); main_23(); main_24(); main_25(); main_26(); main_27(); main_28(); main_29();
     return 0;
 }
