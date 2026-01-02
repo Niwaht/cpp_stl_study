@@ -192,8 +192,93 @@ void main_7() {
     else cout << "No path to the exit found.\n";
 }
 
+/// Breadth-first searches
+#include <queue>
+void bfs(int source, const vector<vector<int>>& adj) {
+    int n = adj.size();
+    vector<bool> visited(n, false);
+    queue<int> q;
+    q.push(source);
+    visited[source] = true;
+    cout << "BFS Path: ";
+    while(!q.empty()) {
+        int x = q.front();
+        q.pop();
+        cout << x << ' ';
+        for(int neighbor : adj[x]) { if(!visited[neighbor]) { q.push(neighbor); visited[neighbor] = true; } }
+    }
+    cout << '\n';
+}
+void main_8() {
+    cout << "\nBreadth-first searches\n----------------------------------------\n";
+    int vertices = 5;
+    vector<vector<int>> adj(vertices);
+    adj[0] = {1, 2}; adj[1] = {0, 3, 4}; adj[2] = {0}; adj[3] = {1}; adj[4] = {1};
+    cout << "Starting BFS from vertex 0:\n";
+    bfs(0, adj);
+}
+
+/// Water jug problem
+#include <set>
+struct state {
+    int x, y;
+    vector<pair<int, int>> path;
+    bool operator<(const state& other) const {
+        if(x != other.x) return x < other.x;
+        return y < other.y;
+    }
+    // general state node:
+    // {x, y, {{a1, b1}, {a2, b2}, ...}}
+};
+void solveWaterJug(int N, int M, int K) {
+    queue<state> q;
+    set<pair<int, int>> visited;
+    state start = {0, 0, {{0, 0}}};
+    q.push(start);
+    visited.insert({0, 0});
+    while(!q.empty()) {
+        state current = q.front();
+        q.pop();
+        if(current.x == K || current.y == K) {
+            cout << "Found solution in " << current.path.size() - 1 << " steps:\n";
+            for(int i = 0; i < (int)current.path.size(); i++) {
+                cout << "(" << current.path[i].first << ", " << current.path[i].second << ")";
+                if(i < (int)current.path.size() - 1) cout << " -> ";
+            }
+            cout << '\n';
+            return;
+        }
+        vector<pair<int, int>> next_states;
+        // 1. Fill
+        next_states.push_back({N, current.y});
+        next_states.push_back({current.x, M});
+        // 2. Empty
+        next_states.push_back({0, current.y});
+        next_states.push_back({current.x, 0});
+        // 3. Pour
+        int pour_to_m = min(current.x, M - current.y); next_states.push_back({current.x - pour_to_m, current.y + pour_to_m});
+        int pour_to_n = min(N - current.x, current.y); next_states.push_back({current.x + pour_to_n, current.y - pour_to_n});
+        for(auto& st : next_states) {
+            if(visited.find(st) == visited.end()) {
+                visited.insert(st);
+                state next_node = {st.first, st.second, current.path};
+                next_node.path.push_back(st);
+                q.push(next_node);
+            }
+        }
+    }
+    cout << "No solutions were found.\n";
+}
+void main_9() {
+    cout << "\nWater jug problem\n----------------------------------------\n";
+    int N = 3, M = 4, K = 2;
+    // int N = 10, M = 6, K = 8;
+    cout << "Solving for jugs (" << N << "L, " << M << "L) to get " << K << "L:\n";
+    solveWaterJug(N, M, K);
+}
+
 int main()
 {
-    main_1(); main_2(); main_3(); main_4(); main_5(); main_6(); main_7();
+    main_1(); main_2(); main_3(); main_4(); main_5(); main_6(); main_7(); main_8(); main_9();
     return 0;
 }
