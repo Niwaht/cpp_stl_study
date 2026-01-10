@@ -189,9 +189,10 @@ void main_5() {
                 update_bit(out[k] + 1, -v, n);
             } else {
                 int x; cin >> x;
-                cout << query_bit(in[x]) << '\n';
+                cout << query_bit(in[x]) << ' ';
             }
         }
+        cout << '\n';
     */
 
     int n = 5, q = 4;
@@ -208,9 +209,10 @@ void main_5() {
             update_bit(out[k] + 1, -v, n);
         } else {
             int x = qs[i].second.first;
-            cout << query_bit(in[x]) << '\n';
+            cout << query_bit(in[x]) << ' ';
         }
     }
+    cout << '\n';
 }
 
 /// Tree diameters
@@ -237,8 +239,8 @@ void main_6() {
         for(int i = 0; i < n - 1; i++) {
             int u, v;
             cin >> u >> v;
-            adj[u].push_back(v);
-            adj[v].push_back(u);
+            a6[u].push_back(v);
+            a6[v].push_back(u);
         }
         int result = diameter(n);
         cout << "Tree Diameter: " << result << '\n';
@@ -284,8 +286,8 @@ void main_7() {
         for(int i = 0; i < n - 1; i++) {
             int u, v;
             cin >> u >> v;
-            adj[u].push_back(v);
-            adj[v].push_back(u);
+            a7[u].push_back(v);
+            a7[v].push_back(u);
         }
         int result = diameter_iterative(n);
         cout << "Tree Diameter: " << result << '\n';
@@ -300,9 +302,140 @@ void main_7() {
     cout << "Tree Diameter: " << result << '\n';
 }
 
+/// Tree diameters via breadth-first searches
+#include <queue>
+#define a8 adj_8
+vector<vector<int>> a8;
+struct result { int farthest, max_distance; };
+result bfs(int start, int n) {
+    vector<int> dist(n + 1, -1);
+    queue<int> q;
+    q.push(start);
+    dist[start] = 0;
+    int farthest = start, max_distance = 0;
+    while(!q.empty()) {
+        int u = q.front(); q.pop();
+        if(dist[u] > max_distance) { max_distance = dist[u]; farthest = u; }
+        for(int v : a8[u]) { if(dist[v] == -1) { dist[v] = dist[u] + 1; q.push(v); } }
+    }
+    return {farthest, max_distance};
+}
+int diameter_bfs(int n) {
+    if(n <= 1) return 0;
+    result first = bfs(1, n), second = bfs(first.farthest, n);
+    return second.max_distance;
+}
+void main_8() {
+    cout << "\nTree diameters via BFS\n----------------------------------------\n";
+    /*
+        int n;
+        cin >> n;
+        a8.assign(n + 1, vector<int>());
+        for(int i = 0; i < n - 1; i++) {
+            int u, v;
+            cin >> u >> v;
+            a8[u].push_back(v);
+            a8[v].push_back(u);
+        }
+        cout << "Tree Diameter: " << diameter_bfs(n) << '\n';
+    */
+
+    int n = 8;
+    a8.assign(n + 1, vector<int>());
+    auto push = [](int u, int v){ a8[u].push_back(v); a8[v].push_back(u); };
+    push(1, 2); push(1, 3); push(2, 4); push(2, 5);
+    push(3, 6); push(5, 7); push(5, 8);
+    cout << "Tree Diameter: " << diameter_bfs(n) << '\n';
+}
+
+/// Tree diameters via dynamic programming
+#define a9 adj_9
+vector<int> a9[MAXN];
+int ans = 0;
+int dp(int u, int p) {
+    int max_h = 0;
+    for(int v : a9[u]) {
+        if(v == p) continue;
+        int h = dp(v, u) + 1;
+        ans = max(ans, max_h + h);
+        max_h = max(max_h, h);
+    }
+    return max_h;
+}
+void main_9() {
+    cout << "\nTree diameters via dynamic programming\n----------------------------------------\n";
+    /*
+        int n;
+        cin >> n;
+        for(int i = 0; i < n - 1; i++) {
+            int u, v;
+            cin >> u >> v;
+            a9[u].push_back(v);
+            a9[v].push_back(u);
+        }
+        dp(1, -1);
+        cout << "Tree Diameter: " << ans << '\n';
+    */
+
+    auto push = [](int u, int v){ a9[u].push_back(v); a9[v].push_back(u); };
+    push(1, 2); push(1, 3); push(2, 4); push(2, 5);
+    push(3, 6); push(5, 7); push(5, 8);
+    dp(1, -1);
+    cout << "Tree Diameter: " << ans << '\n';
+}
+
+/// Tree centers via leaf eradications
+vector<int> findCenter(int n, vector<vector<int>>& adj) {
+    if(n == 1) return {1};
+    vector<int> degree(n + 1);
+    queue<int> q;
+    for(int i = 1; i <= n; i++) {
+        degree[i] = adj[i].size();
+        if(degree[i] == 1) q.push(i);
+    }
+    int removed = 0;
+    while(n - removed > 2) {
+        int qsz = q.size();
+        removed += qsz;
+        while(qsz--) {
+            int u = q.front(); q.pop();
+            for(int v : adj[u]) { if(--degree[v] == 1) q.push(v); }
+        }
+    }
+    vector<int> result;
+    while(!q.empty()) { result.push_back(q.front()); q.pop(); }
+    return result;
+}
+void main_10() {
+    cout << "\nTree centers via leaf eradications\n----------------------------------------\n";
+    /*
+        int n, u, v;
+        cin >> n;
+        vector<vector<int>> adj(n + 1);
+        for(int i = 0; i < n - 1; i++) {
+            cin >> u >> v;
+            adj[u].push_back(v);
+            adj[v].push_back(u);
+        }
+        vector<int> centers = findCenter(n, adj);
+        cout << "Tree Centers: ";
+        for(int c : centers) cout << c << ' ';
+        cout << '\n';
+    */
+
+    int n = 8;
+    vector<vector<int>> adj(n + 1);
+    auto push = [&](int u, int v){ adj[u].push_back(v); adj[v].push_back(u); };
+    push(1, 2); push(1, 3); push(2, 4); push(2, 5);
+    push(3, 6); push(5, 7); push(5, 8);
+    vector<int> centers = findCenter(n, adj);
+    cout << "Tree Centers: ";
+    for(int c : centers) cout << c << ' ';
+    cout << '\n';
+}
 
 int main()
 {
-    main_1(); main_2(); main_3(); main_4(); main_5(); main_6(); main_7();
+    main_1(); main_2(); main_3(); main_4(); main_5(); main_6(); main_7(); main_8(); main_9(); main_10();
     return 0;
 }
