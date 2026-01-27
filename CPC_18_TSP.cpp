@@ -49,8 +49,54 @@ void main_1() {
     }
 }
 
+/// Traveling salesman problem: Nearest neighbor
+#include <string>
+void nearestNeighborTSP(int n, vector<vector<int>>& d, map<int, string>& nm) {
+    vector<int> path; vector<bool> vis(n, false);
+    int cur = 0, sum = 0;
+    vis[cur] = true; path.push_back(cur);
+    for(int i = 0; i < n - 1; i++) {
+        int nxt = -1, low = INF;
+        for(int j = 0; j < n; j++) if(!vis[j] && d[cur][j] < low) { low = d[cur][j]; nxt = j; }
+        if(nxt == -1) { cout << "Graph is disconnected\n"; return; }
+        vis[nxt] = true; sum += low; path.push_back(nxt); cur = nxt;
+    }
+    path.push_back(0);
+    if(d[cur][0] >= INF) { cout << "No optimized path was found\n"; return; }
+    cout << "Minimum weight: " << sum + d[cur][0] << "\nPath: ";
+    for(int i = 0; i < (int)path.size(); i++) cout << nm[path[i]] << (i == (int)path.size() - 1 ? "" : " -> ");
+    cout << '\n';
+}
+void main_2() {
+    cout << "\nTSP: Nearest neighbor\n----------------------------------------\n";
+    // int n, e, v_cnt = 0; cin >> n >> e;
+    int n = 5, v_cnt = 0;
+    vector<vector<int>> d(n, vector<int>(n, INF));
+    map<int, string> nm; map<string, int> id;
+    for(int i = 0; i < n; i++) for(int j = 0; j < n; j++) d[i][j] = (i == j ? 0 : INF);
+    /*
+        for(int i = 0; i < e; i++) {
+            string u, v; int w; cin >> u >> v >> w;
+            if(id.find(u) == end(id)) { id[u] = v_cnt; nm[v_cnt++] = u; }
+            if(id.find(v) == end(id)) { id[v] = v_cnt; nm[v_cnt++] = v; }
+            d[id[u]][id[v]] = d[id[v]][id[u]] = w;
+        }
+    */
+    auto push = [&](string u, string v, int w){
+        if(id.find(u) == end(id)) { id[u] = v_cnt; nm[v_cnt++] = u; }
+        if(id.find(v) == end(id)) { id[v] = v_cnt; nm[v_cnt++] = v; }
+        d[id[u]][id[v]] = d[id[v]][id[u]] = w;
+    };
+    push("A", "B", 5); push("A", "C", 15); push("A", "D", 1); push("A", "E", 2);
+    push("B", "C", 6); push("B", "E", 8); push("C", "D", 10); push("D", "E", 3);
+    // push("A", "B", 5); push("A", "D", 1); push("A", "E", 2);
+    // push("B", "C", 6); push("B", "E", 8); push("D", "E", 3);
+    if(v_cnt < n) cout << "City information were not found\n";
+    else nearestNeighborTSP(n, d, nm);
+}
+
 int main()
 {
-    main_1();
+    main_1(); main_2();
     return 0;
 }
