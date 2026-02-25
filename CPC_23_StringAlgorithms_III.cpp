@@ -92,8 +92,45 @@ int main_3() {
     return 0;
 }
 
+/// Knuth-Morris-Pratt algorithm: optimized approach
+vector<int> build_next(const string& P) {
+    int m = P.size(), i = 0, j = -1; vector<int> n(m); n[0] = -1;
+    while(i < m - 1)
+        if(j < 0 || P[i] == P[j]) {
+            i++; j++;
+            if(P[i] == P[j]) n[i] = n[j];                   // Skip
+            else n[i] = j;                                  // Select
+        } else j = n[j];
+    return n;
+}
+vector<int> opt_search(const string& T, const string& P) {
+    int n = T.size(), m = P.size(), i = 0, j = 0;
+    vector<int> res, next = build_next(P);
+    while(i < n) {
+        if(j < 0 || T[i] == P[j]) i++, j++;
+        else j = next[j];
+        if(j == m) {
+            res.push_back(i - m);
+            j = (m > 0) ? next[m - 1] + 1 : 0;
+            if(j > 0 && P[m - 1] != P[j - 1]) j = 0;
+        }
+    }
+    return res;
+}
+int main_4() {
+    cout << "\nKMP algorithm: optimized approach\n----------------------------------------\n";
+    string t = "AABCABCABCBAABC", p = "AB";
+    // cout << "Text: ";    getline(cin, t);
+    // cout << "Pattern: "; getline(cin, p);
+    if(t == "" || p == "") return cout << "Input is empty\n", 1;
+    vector<int> r = opt_search(t, p);
+    if(r.empty()) cout << ">>> Not found\n";
+    else for(int x : r) cout << ">>> Found at index: " << x << '\n';
+    return 0;
+}
+
 int main()
 {
-    main_1(); main_2(); main_3();
+    main_1(); main_2(); main_3(); main_4();
     return 0;
 }
